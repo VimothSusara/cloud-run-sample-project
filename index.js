@@ -28,6 +28,35 @@ app.post("/api/echo", (req, res) => {
   });
 });
 
+app.post("/api/message", (req, res) => {
+  const { name, message } = req.body ?? {};
+
+  if (!name || !message) {
+    return res.status(400).json({
+      success: false,
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "Both 'name' and 'message' fields are required.",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      id: crypto.randomUUID(),
+      greeting: `Hi ${name}, we received your message.`,
+      originalMessage: message,
+      receivedAt: new Date().toISOString(),
+    },
+    meta: {
+      service: "cloud-run-sample-project",
+      version: "1.0.0",
+    },
+  });
+});
+
 app.use((_req, res) => {
   res.status(404).json({ error: "Not found" });
 });
